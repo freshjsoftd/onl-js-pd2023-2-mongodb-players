@@ -167,11 +167,83 @@
 // SELECT * FROM customers WHERE firstName IN ['Jane', 'Nick']
 // db.customers.find({'address.country': /^U/})
 
-use('users')
+// use('users')
+
+// db.customers.find().count()
+// db.customers.count({'address.city': 'Liverpool'})
+// db.customers.distinct('address.country')
+
+// db.customers.find({p_langs: {$elemMatch: {$in: ['Fortran', 'Algol67']}}})
+// db.customers.find({$or: [{p_langs: {$all: ['Fortran']}}, {p_langs: {$all: ['Algol67']}}]})
+
+// db.customers.find({firstName: /^J/})
+// db.customers.updateMany({firstName: /^J/}, {$unset: {age: false}}, {upsert: true})
+// db.customers.updateMany({'address.country': 'Great Britain'}, {$set: {'address.city': 'Liverpool'}}, {upsert: true})
 
 // db.customers.updateMany({}, {$rename: {'prog_langs': 'p_langs'}}, {upsert: true})
 // db.customers.find()
 // db.customers.find({firstName: /^J/})
 // db.customers.find({'address.city': 'London'}, {firstName: 1, lastName: 1, _id: 0})
 // db.customers.find({'$or': [{age: {'$gt': 40}}, {'address.country': 'Great Britain'}]}, {firstName: 1, lastName: 1, _id: 0})
-db.customers.find({ p_langs: {$all: ['JS', 'Python']} }, {firstName: 1, "address.country": 1, _id: 0})
+// db.customers.find({ p_langs: {$all: ['JS', 'Python']} }, {firstName: 1, "address.country": 1, _id: 0})
+
+// ===================================================
+// {
+//   "_id": {
+//     "$oid": "66af36aea3810ff6ec154356"
+//   },
+//   "type": "Admin"
+// },
+// {
+//   "_id": {
+//     "$oid": "66af36aea3810ff6ec154357"
+//   },
+//   "type": "Moderator"
+// },
+// {
+//   "_id": {
+//     "$oid": "66af36aea3810ff6ec154358"
+//   },
+//   "type": "User"
+// }
+// For Roles collection
+use('users')
+db.customers.updateMany({'address.country': 'USA'}, {$set: {roleId: ObjectId("66af36aea3810ff6ec154358")}})
+// const roles = [
+//   {
+//     type: 'Admin',
+//   },
+//   {
+//     type: 'Moderator',
+//   },
+//   {
+//     type: 'User',
+//   },
+// ]
+// db.roles.insertMany(roles)
+// db.roles.find()
+// ==================================
+// Pipeline in aggregate
+use('users');
+
+db.customers.aggregate([
+  // { $match: {'address.country': 'Great Britain'}},
+  
+  { $group: { _id: '$address.country', maxAge: { $max: '$age' } } }
+]);
+// db.customers.aggregate([
+//   { $match: {'address.country': /^(u|g)/i}},
+//   {$lookup: {
+//     from: 'roles',
+//     localField: 'roleId',
+//     foreignField: '_id',
+//     as: 'customerRole',
+//   }},
+//   {$project: {
+//    firstName: 1,
+//    lastName: 1,
+//    customerRole: 1,
+//    _id: 0,
+//   }}
+//   // { $group: { _id: '$address.country', totalAmount: { $count: {} } } }
+// ]);
