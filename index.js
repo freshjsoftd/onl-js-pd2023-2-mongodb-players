@@ -3,12 +3,15 @@ const express = require('express');
 
 const dbMongo = require('./src/models');
 const { players, roles } = require('./src/constants');
+const router = require('./src/routers');
 
 const { Player, Role } = dbMongo;
 
 const app = express();
 
 app.use(express.json());
+
+app.use('/api', router)
 
 const createPlayers = async () => {
 	await Player.create(players);

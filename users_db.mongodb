@@ -224,13 +224,7 @@ db.customers.updateMany({'address.country': 'USA'}, {$set: {roleId: ObjectId("66
 // db.roles.find()
 // ==================================
 // Pipeline in aggregate
-use('users');
 
-db.customers.aggregate([
-  // { $match: {'address.country': 'Great Britain'}},
-  
-  { $group: { _id: '$address.country', maxAge: { $max: '$age' } } }
-]);
 // db.customers.aggregate([
 //   { $match: {'address.country': /^(u|g)/i}},
 //   {$lookup: {
@@ -247,3 +241,26 @@ db.customers.aggregate([
 //   }}
 //   // { $group: { _id: '$address.country', totalAmount: { $count: {} } } }
 // ]);
+
+use('players');
+
+db.players.aggregate([
+	{
+		$lookup: {
+			from: 'roles',
+			localField: 'roleId',
+			foreignField: '_id',
+			as: 'playerRole',
+		},
+	},
+	{
+		$project: {
+			firstName: 1,
+			lastName: 1,
+			playerRole: {
+				role: 1,
+			},
+			_id: 0,
+		},
+	},
+]);
