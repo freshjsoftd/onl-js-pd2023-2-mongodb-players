@@ -1,24 +1,27 @@
-require('dotenv').config()
-const express = require('express')
+require('dotenv').config();
+const express = require('express');
 
+const dbMongo = require('./src/models');
+const { players, roles } = require('./src/constants');
 
-const dbMongo = require('./src/models')
-const {players} = require('./src/constants')
+const { Player, Role } = dbMongo;
 
-const {Player} = dbMongo;
+const app = express();
 
-const app = express()
-
-app.use(express.json())
+app.use(express.json());
 
 const createPlayers = async () => {
-  await Player.insertMany(players)
-}
+	await Player.create(players);
+};
 
 // createPlayers()
 
-const PORT  = process.env.PORT || 5000;
+const createRoles = async () => {
+	await Role.create(roles);
+};
 
+// createRoles()
 
+const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => console.log(`Server has been started on port ${PORT}`))
+app.listen(PORT, () => console.log(`Server has been started on port ${PORT}`));
